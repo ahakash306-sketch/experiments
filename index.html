@@ -150,6 +150,12 @@
     {{ localTimeLabel }} · {{ weatherLabel }}
   </footer>
 
+  <button onClick="{{ toggleMute }}" style="{{ muteBtnStyle }}">
+    <span style="{{ bar1Style }}"></span>
+    <span style="{{ bar2Style }}"></span>
+    <span style="{{ bar3Style }}"></span>
+  </button>
+
   <img src="uploads/Cursor.svg" alt="" style="{{ gloveStyle }}">
   <sc-for list="{{ pows }}" as="pow" hint-placeholder-count="0">
     <div style="{{ pow.style }}">{{ pow.text }}</div>
@@ -188,7 +194,45 @@ const POW_WORDS = ['POW!', 'BAM!', 'BOOM!', 'ZAP!', 'WHAP!'];
 const POW_COLORS = ['oklch(0.63 0.22 25)', 'oklch(0.75 0.18 95)', 'oklch(0.68 0.18 230)', 'oklch(0.72 0.17 145)', 'oklch(0.72 0.19 300)'];
 
 class Component extends DCLogic {
-  state = { filter: 'All', hoveredIdx: null, cx: -100, cy: -100, punching: false, pows: [], scatter: {}, scatterPhase: 'in', contactScatter: {}, contactPhase: 'in', showAll: false, now: new Date(), weather: null, experiments: [], ticBoard: Array(9).fill(null), ticTurn: 'X' };
+  state = { filter: 'All', hoveredIdx: null, cx: -100, cy: -100, punching: false, pows: [], scatter: {}, scatterPhase: 'in', contactScatter: {}, contactPhase: 'in', showAll: false, now: new Date(), weather: null, experiments: [], ticBoard: Array(9).fill(null), ticTurn: 'X', muted: false };
+
+  ensureAudio() {
+    if (!this._ctx) this._ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (this._ctx.state === 'suspended') this._ctx.resume();
+    return this._ctx;
+  }
+
+  tone(freq, dur, type, startFreq) {
+    if (this.state.muted) return;
+    const ctx = this.ensureAudio();
+    const t = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type || 'square';
+    osc.frequency.setValueAtTime(startFreq || freq, t);
+    osc.frequency.exponentialRampToValueAtTime(freq, t + dur * 0.6);
+    gain.gain.setValueAtTime(0.16, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(t);
+    osc.stop(t + dur + 0.02);
+  }
+
+  playPunch() {
+    const variants = [
+      () => this.tone(55, 0.14, 'square', 170),
+      () => this.tone(70, 0.11, 'sawtooth', 240),
+      () => this.tone(45, 0.18, 'square', 130),
+      () => this.tone(90, 0.09, 'triangle', 300),
+      () => this.tone(60, 0.15, 'sawtooth', 190)
+    ];
+    variants[Math.floor(Math.random() * variants.length)]();
+  }
+  playClick() { this.tone(340, 0.08, 'triangle', 620); }
+  playWin() {
+    [520, 660, 880].forEach((f, i) => setTimeout(() => this.tone(f, 0.16, 'triangle'), i * 90));
+  }
 
   ticWinner(board) {
     const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
@@ -200,7 +244,9 @@ class Component extends DCLogic {
     if (this.state.ticBoard[i] || this.ticWinner(this.state.ticBoard)) return;
     const board = [...this.state.ticBoard];
     board[i] = this.state.ticTurn;
+    this.playClick();
     this.setState({ ticBoard: board, ticTurn: this.state.ticTurn === 'X' ? 'O' : 'X' });
+    if (this.ticWinner(board) && this.ticWinner(board) !== 'draw') setTimeout(() => this.playWin(), 120);
   }
 
   ticReset() {
@@ -301,6 +347,7 @@ class Component extends DCLogic {
       const id = Math.random().toString(36).slice(2);
       const text = POW_WORDS[Math.floor(Math.random() * POW_WORDS.length)];
       const color = POW_COLORS[Math.floor(Math.random() * POW_COLORS.length)];
+      this.playPunch();
       this.setState({ punching: true, pows: [...this.state.pows, { id, x: e.clientX, y: e.clientY, text, color }] });
       setTimeout(() => this.setState(s => ({ pows: s.pows.filter(p => p.id !== id) })), 500);
     };
@@ -374,6 +421,13 @@ class Component extends DCLogic {
       showViewAll: this.state.experiments.length > 4,
       viewAllLabel: this.state.showAll ? 'Show less' : 'View all experiments',
       toggleShowAll: () => this.setState(s => ({ showAll: !s.showAll })),
+      muted: this.state.muted,
+      toggleMute: () => this.setState({ muted: !this.state.muted }),
+      showWaves: !this.state.muted,
+      muteBtnStyle: `position:fixed; top:20px; right:20px; z-index:10000; width:40px; height:40px; border-radius:50%; border:2px solid oklch(0.22 0.02 60); background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:3px;`,
+      bar1Style: `width:3px; height:${this.state.muted ? '6px' : '10px'}; border-radius:2px; background:oklch(0.22 0.02 60); transition:height 0.15s ease;`,
+      bar2Style: `width:3px; height:${this.state.muted ? '6px' : '16px'}; border-radius:2px; background:oklch(0.22 0.02 60); transition:height 0.15s ease;`,
+      bar3Style: `width:3px; height:${this.state.muted ? '6px' : '12px'}; border-radius:2px; background:oklch(0.22 0.02 60); transition:height 0.15s ease;`,
       ticCells: this.state.ticBoard.map((mark, i) => {
         const rots = [-6, 4, -5, 5, -3, 4, -4, 3, -6];
         return {
