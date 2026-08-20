@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800&family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  body { margin: 0; background: oklch(0.17 0.012 250); font-family: 'Sora', sans-serif; color: oklch(0.92 0.008 250); }
+  * { box-sizing: border-box; }
+  input, textarea, select { font-family: 'Sora', sans-serif; }
+  input:focus, textarea:focus, select:focus, [contenteditable]:focus { outline: 2px solid oklch(0.65 0.18 250); }
+  [contenteditable] { min-height:60px; }
+  input::placeholder, textarea::placeholder { color: oklch(0.5 0.01 250); }
+</style>
+</helmet>
+
+<div style="min-height:100vh;">
+  <div style="position:sticky; top:0; z-index:10; display:flex; align-items:center; justify-content:space-between; padding:20px 40px; background:oklch(0.12 0.012 250); color:oklch(0.97 0.008 250); border-bottom:2px solid oklch(0.28 0.01 250);">
+    <div>
+      <p style="margin:0; font-family:'Unbounded',sans-serif; font-weight:700; font-size:20px;">Admin Studio</p>
+      <p style="margin:0; font-size:13px; opacity:0.65;">Edit experiments, then publish a new content.json</p>
+    </div>
+    <div style="display:flex; gap:12px;">
+      <button onClick="{{ reloadPublished }}" style="background:transparent; border:2px solid oklch(0.97 0.008 250 / 0.4); color:oklch(0.97 0.008 250); font-family:'Unbounded',sans-serif; font-weight:600; font-size:13px; padding:10px 18px; border-radius:100px; cursor:pointer;">Reload published</button>
+      <button onClick="{{ addExperiment }}" style="background:oklch(0.72 0.17 145); color:oklch(0.15 0.02 145); font-family:'Unbounded',sans-serif; font-weight:700; font-size:13px; padding:10px 18px; border-radius:100px; cursor:pointer; border:none;">+ Add experiment</button>
+      <button onClick="{{ publish }}" style="background:oklch(0.63 0.22 25); color:oklch(0.98 0.01 25); font-family:'Unbounded',sans-serif; font-weight:700; font-size:13px; padding:10px 22px; border-radius:100px; cursor:pointer; border:none;">↓ Publish content.json</button>
+    </div>
+  </div>
+
+  <sc-if value="{{ published }}" hint-placeholder-val="{{ false }}">
+    <div style="margin:20px 40px 0; padding:14px 20px; background:oklch(0.3 0.1 145 / 0.35); border:2px solid oklch(0.6 0.18 145); border-radius:12px; font-size:14px; font-weight:600;">
+      content.json downloaded. Replace the file in your repo to update the live site.
+    </div>
+  </sc-if>
+
+  <div style="max-width:860px; margin:0 auto; padding:32px 40px 100px;">
+
+    <sc-if value="{{ isListView }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <sc-for list="{{ rows }}" as="row" hint-placeholder-count="4">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:14px; background:oklch(0.2 0.012 250); border:2px solid oklch(0.3 0.012 250); border-radius:12px; padding:14px 18px; cursor:pointer;" onClick="{{ row.open }}">
+            <div style="display:flex; align-items:center; gap:12px; min-width:0;">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:oklch(0.6 0.02 250); background:oklch(0.26 0.012 250); padding:4px 9px; border-radius:6px;">#{{ row.index }}</span>
+              <span style="font-family:'Unbounded',sans-serif; font-weight:700; font-size:15px; color:oklch(0.95 0.008 250); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ row.cardTitle }}</span>
+              <sc-if value="{{ row.isDraft }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:oklch(0.85 0.16 95); background:oklch(0.32 0.1 95 / 0.3); padding:3px 9px; border-radius:100px;">Draft</span>
+              </sc-if>
+              <sc-if value="{{ row.isNew }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:oklch(0.85 0.16 145); background:oklch(0.32 0.1 145 / 0.3); padding:3px 9px; border-radius:100px;">New</span>
+              </sc-if>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;" onClick="{{ row.stop }}">
+              <button onClick="{{ row.moveUp }}" style="border:none; background:oklch(0.28 0.012 250); color:oklch(0.9 0.008 250); width:28px; height:28px; border-radius:8px; cursor:pointer; font-size:13px;">↑</button>
+              <button onClick="{{ row.moveDown }}" style="border:none; background:oklch(0.28 0.012 250); color:oklch(0.9 0.008 250); width:28px; height:28px; border-radius:8px; cursor:pointer; font-size:13px;">↓</button>
+              <button onClick="{{ row.remove }}" style="border:none; background:oklch(0.35 0.15 25 / 0.35); color:oklch(0.85 0.1 25); width:28px; height:28px; border-radius:8px; cursor:pointer; font-size:13px;">✕</button>
+              <span style="color:oklch(0.6 0.02 250); font-size:16px; padding-left:4px;">→</span>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isEditorView }}" hint-placeholder-val="{{ false }}">
+      <button onClick="{{ backToList }}" style="display:flex; align-items:center; gap:8px; background:transparent; border:none; color:oklch(0.7 0.02 250); font-family:'Unbounded',sans-serif; font-weight:600; font-size:14px; cursor:pointer; padding:0; margin-bottom:20px;">← All experiments</button>
+
+      <div style="background:oklch(0.2 0.012 250); border:2px solid oklch(0.3 0.012 250); border-radius:16px; overflow:hidden;">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 24px; background:oklch(0.15 0.012 250);">
+          <div style="display:flex; align-items:center; gap:14px;">
+            <span style="font-family:'Unbounded',sans-serif; font-weight:700; font-size:15px; color:oklch(0.95 0.008 250);">{{ item.cardTitle }}</span>
+            <sc-if value="{{ item.isDraft }}" hint-placeholder-val="{{ false }}">
+              <span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:oklch(0.85 0.16 95); background:oklch(0.32 0.1 95 / 0.3); padding:3px 9px; border-radius:100px;">Draft</span>
+            </sc-if>
+            <sc-if value="{{ item.isNew }}" hint-placeholder-val="{{ false }}">
+              <span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:oklch(0.85 0.16 145); background:oklch(0.32 0.1 145 / 0.3); padding:3px 9px; border-radius:100px;">New</span>
+            </sc-if>
+          </div>
+          <sc-if value="{{ item.showRestore }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ item.restore }}" style="border:2px solid oklch(0.4 0.012 250); background:transparent; color:oklch(0.85 0.008 250); font-family:'Unbounded',sans-serif; font-weight:600; font-size:12px; padding:7px 14px; border-radius:100px; cursor:pointer;">{{ item.restoreLabel }}</button>
+          </sc-if>
+        </div>
+
+        <div style="display:flex; gap:4px; padding:0 24px; background:oklch(0.18 0.012 250); border-bottom:2px solid oklch(0.3 0.012 250);">
+          <button onClick="{{ item.selectCardTab }}" style="{{ item.cardTabStyle }}">1 · Card</button>
+          <button onClick="{{ item.selectDetailsTab }}" style="{{ item.detailsTabStyle }}">2 · Details</button>
+        </div>
+
+        <sc-if value="{{ item.onCardTab }}" hint-placeholder-val="{{ true }}">
+          <div style="padding:24px;">
+            <label style="display:flex; flex-direction:column; gap:6px; font-size:12px; font-weight:600; color:oklch(0.65 0.015 250); margin-bottom:14px;">ID (slug)
+              <input value="{{ item.id }}" onChange="{{ item.setId }}" style="border:2px solid oklch(0.32 0.012 250); background:oklch(0.14 0.012 250); color:oklch(0.95 0.008 250); border-radius:8px; padding:9px 12px; font-size:14px;" />
+            </label>
+            <label style="display:flex; flex-direction:column; gap:6px; font-size:12px; font-weight:600; color:oklch(0.65 0.015 250); margin-bottom:14px;">Hero media (shown on the landing page card)
+              <div style="display:flex; gap:8px;">
+                <select value="{{ item.cardHeroImageType }}" onChange="{{ item.setCardHeroImageType }}" style="border:2px solid oklch(0.32 0.012 250); background:oklch(0.14 0.012 250); color:oklch(0.95 0.008 250); border-radius:8px; padding:9px 12px; font-size:14px; font-weight:600; height:42px; line-height:1.2; appearance:none;">
+                  <option value="image">Image</option>
+                  <option value="gif">GIF</option>
+                  <option value="video">Video</option>
+                  <option value="iframe">Iframe / embed</option>
+                </select>
+                <input value="{{ item.cardHeroImage }}" onChange="{{ item.setCardHeroImage }}" placeholder="https://..." style="flex:1; border:2px solid oklch(0.32 0.012 250); background:oklch(0.14 0.012 250); color:oklch(0.95 0.008 250); border-radius:8px; padding:9px 12px; font-size:14px;" />
+              </div>
+            </label>
+            <label style="display:flex; flex-direction:column; gap:6px; font-size:12px; font-weight:600; color:oklch(0.65 0.015 250); margin-bottom:14px;">Placeholder label (shown until an image is set)
+              <input value="{{ item.cardHeroImagePlaceholder }}" onChange="{{ item.setCardHeroImagePlaceholder }}" style="border:2px solid oklch(0.32 0.012 250); background:oklch(0.14 0.012 250); color:oklch(0.95 0.008 250); border-radius:8px; padding:9px 12px; font-size:14px;" />
+            </label>
+            <label style="display:flex; flex-direction:column; gap:6px; font-size:12px; font-weight:600; color:oklch(0.65 0.015 250); margin-bottom:14px;">Card title
+              <input value="{{ item.cardTitle }}" onChange="{{ item.setCardTitle }}" style="border:2px solid oklch(0.32 0.012 250); background:oklch(0.14 0.012 250); color:oklch(0.95 0.008 250); border-radius:8px; padding:9px 12px; font-size:14px;" />
+            </label>
+            <label style="display:flex; flex-direction:column; gap:6px; font-size:12px; font-weight:600; color:oklch(0.65 0.015 250); margin-bottom:14px;">Card body (one or two lines)
+              <textarea value="{{ item.cardBody }}" onChange="{{ item.setCardBody }}" rows="3" style="border:2px solid oklch(0.32 0.012 250); background:oklch(0.14 0.012 250); color:oklch(0.95 0.008 250); border-radius:8px; padding:9px 12px; font-size:14px; line-height:1.5; resize:vertical;"></textarea>
+            </label>
+            <label style="display:flex; align-items:center; gap:10px; font-size:13px; font-weight:600; color:oklch(0.65 0.015 250); cursor:pointer;">
+              <input type="checkbox" checked="{{ item.comingSoon }}" onChange="{{ item.setComingSoon }}" style="width:18px; height:18px; cursor:pointer;" />
+              Coming soon (card is shown but not clickable)
+            </label>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ item.onDetailsTab }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:24px;">
+            <label style="display:flex; flex-direction:column; gap:6px; font-size:12px; font-weight:600; color:oklch(0.65 0.015 250); margin-bottom:14px;">Details title
+              <input value="{{ item.detailsTitle }}" onChange="{{ item.setDetailsTitle }}" style="border:2px solid oklch(0.32 0.012 250); background:oklch(0.14 0.012 250); color:oklch(0.95 0.008 250); border-radius:8px; padding:9px 12px; font-size:14px;" />
+            </label>
+            <label style="display:flex; flex-direction:column; gap:6px; font-size:12px; font-weight:600; color:oklch(0.65 0.015 250); margin-bottom:14px;">Hero media
+              <div style="display:flex; gap:8px;">
+                <select value="{{ item.detailsHeroImageType }}" onChange="{{ item.setDetailsHeroImageType }}" style="border:2px solid oklch(0.32 0.012 250); background:oklch(0.14 0.012 250); color:oklch(0.95 0.008 250); border-radius:8px; padding:9px 12px; font-size:14px; font-weight:600; height:42px; line-height:1.2; appearance:none;">
+                  <option value="image">Image</option>
+                  <option value="gif">GIF</option>
+                  <option value="video">Video</option>
+                  <option value="iframe">Iframe / embed</option>
+                </select>
+                <input value="{{ item.detailsHeroImage }}" onChange="{{ item.setDetailsHeroImage }}" placeholder="https://..." style="flex:1; border:2px solid oklch(0.32 0.012 250); background:oklch(0.14 0.012 250); color:oklch(0.95 0.008 250); border-radius:8px; padding:9px 12px; font-size:14px;" />
+              </div>
+            </label>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+              <label style="display:flex; flex-direction:column; gap:6px; font-size:12px; font-weight:600; color:oklch(0.65 0.015 250);">Tools used (comma-separated)
+                <input value="{{ item.tools }}" onChange="{{ item.setTools }}" style="border:2px solid oklch(0.32 0.012 250); background:oklch(0.14 0.012 250); color:oklch(0.95 0.008 250); border-radius:8px; padding:9px 12px; font-size:14px;" />
+              </label>
+              <label style="display:flex; flex-direction:column; gap:6px; font-size:12px; font-weight:600; color:oklch(0.65 0.015 250);">Collaborators (comma-separated)
+                <input value="{{ item.collaborators }}" onChange="{{ item.setCollaborators }}" style="border:2px solid oklch(0.32 0.012 250); background:oklch(0.14 0.012 250); color:oklch(0.95 0.008 250); border-radius:8px; padding:9px 12px; font-size:14px;" />
+              </label>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:24px;">
+              <label style="display:flex; flex-direction:column; gap:6px; font-size:12px; font-weight:600; color:oklch(0.65 0.015 250);">View live link
+                <input value="{{ item.liveUrl }}" onChange="{{ item.setLiveUrl }}" style="border:2px solid oklch(0.32 0.012 250); background:oklch(0.14 0.012 250); color:oklch(0.95 0.008 250); border-radius:8px; padding:9px 12px; font-size:14px;" />
+              </label>
+              <label style="display:flex; flex-direction:column; gap:6px; font-size:12px; font-weight:600; color:oklch(0.65 0.015 250);">Code link (optional)
+                <input value="{{ item.codeUrl }}" onChange="{{ item.setCodeUrl }}" style="border:2px solid oklch(0.32 0.012 250); background:oklch(0.14 0.012 250); color:oklch(0.95 0.008 250); border-radius:8px; padding:9px 12px; font-size:14px;" />
+              </label>
+            </div>
+
+            <p style="font-size:12px; font-weight:600; color:oklch(0.65 0.015 250); margin:14px 0 10px;">Content blocks</p>
+            <div style="display:flex; flex-direction:column; gap:14px; margin-bottom:16px;">
+              <sc-for list="{{ item.blocks }}" as="block" hint-placeholder-count="1">
+                <div style="border:2px solid oklch(0.3 0.012 250); background:oklch(0.16 0.012 250); border-radius:12px; padding:14px;">
+                  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+                    <span style="font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:oklch(0.7 0.02 250); background:oklch(0.24 0.012 250); padding:3px 9px; border-radius:6px;">{{ block.typeLabel }}</span>
+                    <div style="display:flex; gap:6px;">
+                      <button onClick="{{ block.moveUp }}" style="border:none; background:oklch(0.28 0.012 250); color:oklch(0.9 0.008 250); width:26px; height:26px; border-radius:6px; cursor:pointer; font-size:12px;">↑</button>
+                      <button onClick="{{ block.moveDown }}" style="border:none; background:oklch(0.28 0.012 250); color:oklch(0.9 0.008 250); width:26px; height:26px; border-radius:6px; cursor:pointer; font-size:12px;">↓</button>
+                      <button onClick="{{ block.remove }}" style="border:none; background:oklch(0.35 0.15 25 / 0.35); color:oklch(0.85 0.1 25); width:26px; height:26px; border-radius:6px; cursor:pointer; font-size:12px;">✕</button>
+                    </div>
+                  </div>
+
+                  <sc-if value="{{ block.isText }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex; gap:4px; margin-bottom:8px;">
+                      <button onClick="{{ block.cmdBold }}" style="width:30px; height:30px; border:1px solid oklch(0.32 0.012 250); background:oklch(0.22 0.012 250); color:oklch(0.9 0.008 250); border-radius:6px; cursor:pointer; font-weight:700; font-size:13px;">B</button>
+                      <button onClick="{{ block.cmdItalic }}" style="width:30px; height:30px; border:1px solid oklch(0.32 0.012 250); background:oklch(0.22 0.012 250); color:oklch(0.9 0.008 250); border-radius:6px; cursor:pointer; font-style:italic; font-size:13px;">I</button>
+                      <button onClick="{{ block.cmdUnderline }}" style="width:30px; height:30px; border:1px solid oklch(0.32 0.012 250); background:oklch(0.22 0.012 250); color:oklch(0.9 0.008 250); border-radius:6px; cursor:pointer; text-decoration:underline; font-size:13px;">U</button>
+                      <button onClick="{{ block.cmdStrike }}" style="width:30px; height:30px; border:1px solid oklch(0.32 0.012 250); background:oklch(0.22 0.012 250); color:oklch(0.9 0.008 250); border-radius:6px; cursor:pointer; text-decoration:line-through; font-size:13px;">S</button>
+                      <button onClick="{{ block.cmdLink }}" style="width:30px; height:30px; border:1px solid oklch(0.32 0.012 250); background:oklch(0.22 0.012 250); color:oklch(0.9 0.008 250); border-radius:6px; cursor:pointer; font-size:13px;">🔗</button>
+                    </div>
+                    <div contentEditable="{{ true }}" onBlur="{{ block.onBlur }}" ref="{{ block.setRef }}" dangerouslySetInnerHTML="{{ block.initialHtml }}" style="border:2px solid oklch(0.32 0.012 250); background:oklch(0.14 0.012 250); color:oklch(0.95 0.008 250); border-radius:8px; padding:10px 12px; font-size:14px; line-height:1.6;"></div>
+                  </sc-if>
+
+                  <sc-if value="{{ block.isMedia }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex; gap:8px; margin-bottom:8px;">
+                      <select value="{{ block.mediaType }}" onChange="{{ block.setMediaType }}" style="border:2px solid oklch(0.32 0.012 250); background:oklch(0.14 0.012 250); color:oklch(0.95 0.008 250); border-radius:8px; padding:9px 12px; font-size:14px; font-weight:600; height:42px; line-height:1.2; appearance:none;">
+                        <option value="image">Image</option>
+                        <option value="gif">GIF</option>
+                        <option value="video">Video</option>
+                        <option value="iframe">Iframe / embed</option>
+                      </select>
+                      <input value="{{ block.src }}" onChange="{{ block.setSrc }}" placeholder="{{ block.srcPlaceholder }}" style="flex:1; border:2px solid oklch(0.32 0.012 250); background:oklch(0.14 0.012 250); color:oklch(0.95 0.008 250); border-radius:8px; padding:9px 12px; font-size:14px;" />
+                    </div>
+                    {{ block.previewNode }}
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="display:flex; gap:8px;">
+              <button onClick="{{ item.addText }}" style="{{ item.addTextStyle }}">+ Text ({{ item.textCount }}/4)</button>
+              <button onClick="{{ item.addMedia }}" style="{{ item.addMediaStyle }}">+ Media ({{ item.mediaCount }}/4)</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <div style="display:flex; align-items:center; justify-content:flex-end; gap:14px; padding:18px 24px; background:oklch(0.15 0.012 250); border-top:2px solid oklch(0.3 0.012 250);">
+          <sc-if value="{{ item.saveFlash }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:13px; font-weight:600; color:oklch(0.75 0.16 145);">Saved ✓</span>
+          </sc-if>
+          <sc-if value="{{ item.unsaved }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:13px; font-weight:600; color:oklch(0.75 0.16 95);">Unsaved changes</span>
+          </sc-if>
+          <button onClick="{{ item.saveChanges }}" style="background:oklch(0.72 0.17 145); color:oklch(0.15 0.02 145); font-family:'Unbounded',sans-serif; font-weight:700; font-size:14px; padding:11px 26px; border-radius:100px; cursor:pointer; border:none;">Save changes</button>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+function slugify(s) {
+  return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+let uid = 1;
+function newBlockId() { return 'blk' + (uid++) + '-' + Date.now().toString(36); }
+function clone(x) { return JSON.parse(JSON.stringify(x)); }
+const DRAFT_KEY = 'labExperimentsDraft';
+
+class Component extends DCLogic {
+  state = { experiments: [], original: {}, loaded: false, published: false, tabs: {}, selectedId: null, editBuffer: null, saveFlash: false };
+  blockRefs = {};
+
+  componentDidMount() {
+    this.load();
+  }
+
+  load(forceFresh) {
+    fetch('./content.json').then(r => r.json()).then(data => {
+      const published = data.experiments || [];
+      const original = {};
+      published.forEach(e => { original[e.id] = clone(e); });
+      let experiments = published;
+      if (!forceFresh) {
+        try {
+          const draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null');
+          if (draft && Array.isArray(draft)) experiments = draft;
+        } catch (e) {}
+      } else {
+        localStorage.removeItem(DRAFT_KEY);
+      }
+      this.setState({ experiments, original, loaded: true, published: false, tabs: {}, selectedId: null });
+    });
+  }
+
+  findIdx(id) { return this.state.experiments.findIndex(e => e.id === id); }
+
+  setExperiments(experiments, extra) {
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(experiments));
+    this.setState({ experiments, published: false, ...(extra || {}) });
+  }
+
+  updateBuffer(patch) {
+    this.setState({ editBuffer: { ...this.state.editBuffer, ...patch } });
+  }
+
+  updateCard(field, value) {
+    this.updateBuffer({ card: { ...this.state.editBuffer.card, [field]: value } });
+  }
+
+  updateDetails(field, value) {
+    this.updateBuffer({ details: { ...this.state.editBuffer.details, [field]: value } });
+  }
+
+  updateBlock(blockId, patch) {
+    const blocks = (this.state.editBuffer.details.blocks || []).map(b => b.id === blockId ? { ...b, ...patch } : b);
+    this.updateDetails('blocks', blocks);
+  }
+
+  moveBlock(blockId, dir) {
+    const blocks = [...(this.state.editBuffer.details.blocks || [])];
+    const idx = blocks.findIndex(b => b.id === blockId);
+    const j = idx + dir;
+    if (j < 0 || j >= blocks.length) return;
+    [blocks[idx], blocks[j]] = [blocks[j], blocks[idx]];
+    this.updateDetails('blocks', blocks);
+  }
+
+  removeBlock(blockId) {
+    this.updateDetails('blocks', (this.state.editBuffer.details.blocks || []).filter(b => b.id !== blockId));
+  }
+
+  addBlock(type) {
+    const blocks = this.state.editBuffer.details.blocks || [];
+    const count = blocks.filter(b => b.type === type).length;
+    if (count >= 4) return;
+    const block = type === 'text' ? { id: newBlockId(), type: 'text', html: '' } : { id: newBlockId(), type: 'media', mediaType: 'image', src: '' };
+    this.updateDetails('blocks', [...blocks, block]);
+  }
+
+  openItem(id) {
+    const e = this.state.experiments.find(x => x.id === id);
+    this.setState({ selectedId: id, editBuffer: clone(e) });
+  }
+
+  saveChanges() {
+    const buf = clone(this.state.editBuffer);
+    buf.details.tools = Array.isArray(buf.details.tools) ? buf.details.tools : String(buf.details.tools || '').split(',').map(s => s.trim()).filter(Boolean);
+    buf.details.collaborators = Array.isArray(buf.details.collaborators) ? buf.details.collaborators : String(buf.details.collaborators || '').split(',').map(s => s.trim()).filter(Boolean);
+    const oldId = this.state.selectedId;
+    const experiments = this.state.experiments.map(e => e.id === oldId ? buf : e);
+    this.setExperiments(experiments, { selectedId: buf.id, editBuffer: buf, saveFlash: true });
+    setTimeout(() => this.setState({ saveFlash: false }), 1600);
+  }
+
+  hasUnsavedChanges() {
+    const committed = this.state.experiments.find(e => e.id === this.state.selectedId);
+    return JSON.stringify(committed) !== JSON.stringify(this.state.editBuffer);
+  }
+
+  move(id, dir) {
+    const i = this.findIdx(id);
+    const j = i + dir;
+    if (j < 0 || j >= this.state.experiments.length) return;
+    const experiments = [...this.state.experiments];
+    [experiments[i], experiments[j]] = [experiments[j], experiments[i]];
+    this.setExperiments(experiments);
+  }
+
+  remove(id) {
+    this.setExperiments(this.state.experiments.filter(e => e.id !== id));
+  }
+
+  restore(id) {
+    const orig = this.state.original[id];
+    if (!orig) { this.remove(id); if (this.state.selectedId === id) this.setState({ selectedId: null, editBuffer: null }); return; }
+    const experiments = this.state.experiments.map(e => e.id === id ? clone(orig) : e);
+    const extra = this.state.selectedId === id ? { editBuffer: clone(orig) } : {};
+    this.setExperiments(experiments, extra);
+  }
+
+  addExperiment() {
+    const n = this.state.experiments.length + 1;
+    const id = `new-experiment-${n}`;
+    const experiments = [...this.state.experiments, {
+      id,
+      card: { title: 'New experiment', body: '', heroImage: '', heroImagePlaceholder: 'placeholder' },
+      details: { title: 'New experiment', heroImage: '', heroImagePlaceholder: 'placeholder', tools: [], liveUrl: '', codeUrl: '', collaborators: [], blocks: [] }
+    }];
+    this.setExperiments(experiments, { selectedId: id, editBuffer: clone(experiments[experiments.length - 1]), tabs: { ...this.state.tabs, [id]: 'card' } });
+  }
+
+  execOnBlock(blockId, cmd, arg) {
+    const ref = this.blockRefs[blockId];
+    if (!ref) return;
+    ref.focus();
+    document.execCommand(cmd, false, arg);
+    this.updateBlock(blockId, { html: ref.innerHTML });
+  }
+
+  publish() {
+    const clean = this.state.experiments.map(e => ({
+      id: e.id ? slugify(e.id) : slugify(e.card.title || 'experiment'),
+      card: { ...e.card, heroImageType: e.card.heroImageType || 'image' },
+      details: {
+        ...e.details,
+        tools: Array.isArray(e.details.tools) ? e.details.tools : String(e.details.tools || '').split(',').map(s => s.trim()).filter(Boolean),
+        collaborators: Array.isArray(e.details.collaborators) ? e.details.collaborators : String(e.details.collaborators || '').split(',').map(s => s.trim()).filter(Boolean),
+        blocks: (e.details.blocks || []).map(b => b.type === 'text' ? { id: b.id, type: 'text', html: b.html } : { id: b.id, type: 'media', mediaType: b.mediaType, src: b.src })
+      }
+    }));
+    const blob = new Blob([JSON.stringify({ experiments: clean }, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'content.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    const original = {};
+    this.state.experiments.forEach(e => { original[e.id] = clone(e); });
+    this.setState({ published: true, original });
+  }
+
+  isDraft(e) {
+    const orig = this.state.original[e.id];
+    if (!orig) return false;
+    return JSON.stringify(e) !== JSON.stringify(orig);
+  }
+
+  isNew(e) {
+    return !this.state.original[e.id];
+  }
+
+  buildBlockView(b) {
+    const typeLabel = b.type === 'text' ? 'Text' : (b.mediaType === 'gif' ? 'GIF' : b.mediaType.charAt(0).toUpperCase() + b.mediaType.slice(1));
+    const srcPlaceholders = { image: 'Image URL', gif: 'GIF URL', video: 'Video URL (.mp4 etc)', iframe: 'Embed URL (iframe)' };
+    return {
+      typeLabel,
+      isText: b.type === 'text',
+      isMedia: b.type === 'media',
+      mediaType: b.mediaType,
+      src: b.src || '',
+      srcPlaceholder: b.type === 'media' ? srcPlaceholders[b.mediaType] : '',
+      previewNode: (b.type === 'media' && !!b.src) ? (
+        (b.mediaType === 'image' || b.mediaType === 'gif')
+          ? React.createElement('img', { src: b.src, alt: '', style: { maxWidth: '100%', maxHeight: '160px', borderRadius: '8px', display: 'block' } })
+          : b.mediaType === 'video'
+            ? React.createElement('video', { src: b.src, controls: true, style: { maxWidth: '100%', maxHeight: '160px', borderRadius: '8px', display: 'block' } })
+            : null
+      ) : null,
+      initialHtml: { __html: b.html || '' },
+      setRef: (el) => { if (el) this.blockRefs[b.id] = el; },
+      onBlur: (ev) => this.updateBlock(b.id, { html: ev.target.innerHTML }),
+      cmdBold: () => this.execOnBlock(b.id, 'bold'),
+      cmdItalic: () => this.execOnBlock(b.id, 'italic'),
+      cmdUnderline: () => this.execOnBlock(b.id, 'underline'),
+      cmdStrike: () => this.execOnBlock(b.id, 'strikeThrough'),
+      cmdLink: () => { const url = window.prompt('Link URL'); if (url) this.execOnBlock(b.id, 'createLink', url); },
+      setSrc: (ev) => this.updateBlock(b.id, { src: ev.target.value }),
+      setMediaType: (ev) => this.updateBlock(b.id, { mediaType: ev.target.value }),
+      moveUp: () => this.moveBlock(b.id, -1),
+      moveDown: () => this.moveBlock(b.id, 1),
+      remove: () => this.removeBlock(b.id)
+    };
+  }
+
+  buildItemView() {
+    const e = this.state.editBuffer;
+    const committed = this.state.experiments.find(x => x.id === this.state.selectedId);
+    const i = this.findIdx(this.state.selectedId);
+    const tab = this.state.tabs[this.state.selectedId] || 'card';
+    const tabBtnBase = "border:none; background:transparent; font-family:'Unbounded',sans-serif; font-weight:600; font-size:13px; padding:12px 16px; cursor:pointer; border-bottom:3px solid transparent;";
+    const tabBtnActive = 'border-bottom:3px solid oklch(0.65 0.18 250); color:oklch(0.75 0.16 250);';
+    const tabBtnInactive = 'color:oklch(0.6 0.02 250);';
+    const draft = committed ? this.isDraft(committed) : false;
+    const isNew = committed ? this.isNew(committed) : false;
+    const unsaved = this.hasUnsavedChanges();
+    const tools = Array.isArray(e.details.tools) ? e.details.tools.join(', ') : (e.details.tools || '');
+    const collaborators = Array.isArray(e.details.collaborators) ? e.details.collaborators.join(', ') : (e.details.collaborators || '');
+
+    return {
+      index: i,
+      id: e.id || '',
+      cardTitle: e.card.title || '',
+      cardBody: e.card.body || '',
+      cardHeroImage: e.card.heroImage || '',
+      cardHeroImageType: e.card.heroImageType || 'image',
+      cardHeroImagePlaceholder: e.card.heroImagePlaceholder || '',
+      comingSoon: !!e.card.comingSoon,
+      detailsTitle: e.details.title || '',
+      detailsHeroImage: e.details.heroImage || '',
+      detailsHeroImageType: e.details.heroImageType || 'image',
+      tools,
+      collaborators,
+      liveUrl: e.details.liveUrl || '',
+      codeUrl: e.details.codeUrl || '',
+      blocks: (e.details.blocks || []).map(b => this.buildBlockView(b)),
+      textCount: (e.details.blocks || []).filter(b => b.type === 'text').length,
+      mediaCount: (e.details.blocks || []).filter(b => b.type === 'media').length,
+      isDraft: draft,
+      isNew,
+      showRestore: draft || isNew,
+      restoreLabel: isNew ? 'Discard' : 'Restore changes',
+      restore: () => this.restore(this.state.selectedId),
+      unsaved,
+      saveFlash: this.state.saveFlash,
+      saveChanges: () => this.saveChanges(),
+      onCardTab: tab === 'card',
+      onDetailsTab: tab === 'details',
+      cardTabStyle: tabBtnBase + (tab === 'card' ? tabBtnActive : tabBtnInactive),
+      detailsTabStyle: tabBtnBase + (tab === 'details' ? tabBtnActive : tabBtnInactive),
+      selectCardTab: () => this.setState({ tabs: { ...this.state.tabs, [this.state.selectedId]: 'card' } }),
+      selectDetailsTab: () => this.setState({ tabs: { ...this.state.tabs, [this.state.selectedId]: 'details' } }),
+      setId: (ev) => this.updateBuffer({ id: ev.target.value }),
+      setCardTitle: (ev) => this.updateCard('title', ev.target.value),
+      setCardBody: (ev) => this.updateCard('body', ev.target.value),
+      setCardHeroImage: (ev) => this.updateCard('heroImage', ev.target.value),
+      setCardHeroImageType: (ev) => this.updateCard('heroImageType', ev.target.value),
+      setCardHeroImagePlaceholder: (ev) => this.updateCard('heroImagePlaceholder', ev.target.value),
+      setComingSoon: (ev) => this.updateCard('comingSoon', ev.target.checked),
+      setDetailsTitle: (ev) => this.updateDetails('title', ev.target.value),
+      setDetailsHeroImage: (ev) => this.updateDetails('heroImage', ev.target.value),
+      setDetailsHeroImageType: (ev) => this.updateDetails('heroImageType', ev.target.value),
+      setTools: (ev) => this.updateDetails('tools', ev.target.value),
+      setCollaborators: (ev) => this.updateDetails('collaborators', ev.target.value),
+      setLiveUrl: (ev) => this.updateDetails('liveUrl', ev.target.value),
+      setCodeUrl: (ev) => this.updateDetails('codeUrl', ev.target.value),
+      addText: () => this.addBlock('text'),
+      addMedia: () => this.addBlock('media'),
+      addTextStyle: `border:2px solid oklch(0.32 0.012 250); background:oklch(0.22 0.012 250); color:oklch(0.9 0.008 250); border-radius:100px; padding:8px 16px; font-size:13px; font-weight:600; cursor:${(e.details.blocks || []).filter(b => b.type === 'text').length < 4 ? 'pointer' : 'not-allowed'}; opacity:${(e.details.blocks || []).filter(b => b.type === 'text').length < 4 ? 1 : 0.4};`,
+      addMediaStyle: `border:2px solid oklch(0.32 0.012 250); background:oklch(0.22 0.012 250); color:oklch(0.9 0.008 250); border-radius:100px; padding:8px 16px; font-size:13px; font-weight:600; cursor:${(e.details.blocks || []).filter(b => b.type === 'media').length < 4 ? 'pointer' : 'not-allowed'}; opacity:${(e.details.blocks || []).filter(b => b.type === 'media').length < 4 ? 1 : 0.4};`
+    };
+  }
+
+  renderVals() {
+    const rows = this.state.experiments.map((e, i) => ({
+      index: i,
+      cardTitle: e.card.title || '(untitled)',
+      isDraft: this.isDraft(e),
+      isNew: this.isNew(e),
+      open: () => this.openItem(e.id),
+      stop: (ev) => ev.stopPropagation(),
+      moveUp: (ev) => { ev.stopPropagation(); this.move(e.id, -1); },
+      moveDown: (ev) => { ev.stopPropagation(); this.move(e.id, 1); },
+      remove: (ev) => { ev.stopPropagation(); this.remove(e.id); }
+    }));
+
+    const selected = this.state.editBuffer;
+
+    return {
+      rows,
+      isListView: !selected,
+      isEditorView: !!selected,
+      item: selected ? this.buildItemView() : null,
+      backToList: () => this.setState({ selectedId: null, editBuffer: null }),
+      published: this.state.published,
+      addExperiment: () => this.addExperiment(),
+      publish: () => this.publish(),
+      reloadPublished: () => this.load(true)
+    };
+  }
+}
+
+</script>
+</body>
+</html>

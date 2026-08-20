@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  body { margin: 0; background: oklch(0.98 0.012 70); font-family: 'Sora', sans-serif; color: oklch(0.22 0.02 60); }
+  a { color: oklch(0.5 0.18 25); text-decoration: none; }
+  a:hover { color: oklch(0.42 0.2 25); }
+  * { box-sizing: border-box; }
+  #desktop-only-content { display: block; }
+  #mobile-blocker { display: none; }
+  @media (max-width: 499px) {
+    #desktop-only-content { display: none !important; }
+    #mobile-blocker { display: flex !important; }
+  }
+</style>
+</helmet>
+
+<div id="mobile-blocker" style="display:none; min-height:100vh; align-items:center; justify-content:center; text-align:center; padding:48px; flex-direction:column; gap:16px;">
+  <p style="margin:0; font-family:'Unbounded',sans-serif; font-weight:700; font-size:24px; color:oklch(0.22 0.02 60);">Best on desktop</p>
+  <p style="margin:0; font-size:16px; color:oklch(0.4 0.02 60); max-width:320px;">This lab is built for a bigger screen. Please open it on a desktop or tablet to explore the experiments.</p>
+</div>
+
+<div id="desktop-only-content">
+<sc-if value="{{ loaded }}" hint-placeholder-val="{{ false }}">
+  <sc-if value="{{ notFound }}" hint-placeholder-val="{{ false }}">
+    <div style="min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;">
+      <p style="font-family:'Unbounded',sans-serif; font-weight:700; font-size:24px;">Experiment not found</p>
+      <a href="Experiments Site.dc.html" style="font-weight:600;">← back to the lab</a>
+    </div>
+  </sc-if>
+  <sc-if value="{{ found }}" hint-placeholder-val="{{ false }}">
+    <div style="{{ pageWrapStyle }}">
+      <button onClick="{{ toggleReadingMode }}" style="{{ readingModeBtnStyle }}">{{ readingModeLabel }}</button>
+      <div style="max-width:860px; margin:0 auto; padding:56px 32px 100px;">
+      <a href="Experiments Site.dc.html" style="display:block; width:fit-content; font-family:'Unbounded',sans-serif; font-weight:600; font-size:14px; color:{{ mutedColor }}; margin-bottom:36px;">← back to the lab</a>
+
+      <h1 style="font-family:'Unbounded',sans-serif; font-weight:700; font-size:clamp(32px,5vw,52px); line-height:1.1; margin:0 0 32px; color:{{ textColor }};">{{ details.title }}</h1>
+
+      <div style="{{ heroImageStyle }}">
+        <sc-if value="{{ showHeroPlaceholder }}" hint-placeholder-val="{{ true }}">
+          <span style="font-family:monospace; font-size:13px; color:oklch(0.98 0.01 70 / 0.9); background:oklch(0.2 0.02 60 / 0.35); padding:6px 12px; border-radius:6px;">{{ details.heroImagePlaceholder }}</span>
+        </sc-if>
+        <sc-if value="{{ showHeroVideo }}" hint-placeholder-val="{{ false }}">
+          <video src="{{ details.heroImage }}" style="width:100%; height:100%; object-fit:cover; border-radius:16px;" autoPlay="{{ true }}" loop="{{ true }}" muted="{{ true }}" playsInline="{{ true }}"></video>
+        </sc-if>
+        <sc-if value="{{ showHeroIframe }}" hint-placeholder-val="{{ false }}">
+          <iframe src="{{ details.heroImage }}" style="width:100%; height:100%; border:none; border-radius:16px;"></iframe>
+        </sc-if>
+      </div>
+
+      <div style="display:flex; flex-wrap:wrap; gap:10px; margin:28px 0 20px;">
+        <sc-for list="{{ tools }}" as="tool" hint-placeholder-count="3">
+          <span style="{{ toolPillStyle }}">{{ tool }}</span>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ hasCollaborators }}" hint-placeholder-val="{{ false }}">
+        <p style="margin:0 0 28px; font-size:14px; color:{{ mutedColor }};">with {{ collaboratorsText }}</p>
+      </sc-if>
+
+      <div style="display:flex; flex-wrap:wrap; gap:14px; margin-bottom:44px;">
+        <sc-if value="{{ hasLiveUrl }}" hint-placeholder-val="{{ false }}">
+          <a href="{{ details.liveUrl }}" style="{{ liveBtnStyle }}">View live ↗</a>
+        </sc-if>
+        <sc-if value="{{ hasCodeUrl }}" hint-placeholder-val="{{ false }}">
+          <a href="{{ details.codeUrl }}" style="{{ codeBtnStyle }}">View code ↗</a>
+        </sc-if>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:28px;">
+        <sc-for list="{{ blocks }}" as="block" hint-placeholder-count="2">
+          <sc-if value="{{ block.isText }}" hint-placeholder-val="{{ false }}">
+            <div style="{{ block.wrapStyle }}">{{ block.node }}</div>
+          </sc-if>
+          <sc-if value="{{ block.isMedia }}" hint-placeholder-val="{{ false }}">
+            {{ block.node }}
+          </sc-if>
+        </sc-for>
+      </div>
+      </div>
+    </div>
+  </sc-if>
+</sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const ACCENTS = {
+  a: 'oklch(0.68 0.18 230)', b: 'oklch(0.72 0.19 300)', c: 'oklch(0.7 0.19 25)',
+  d: 'oklch(0.72 0.17 145)', e: 'oklch(0.75 0.18 95)', f: 'oklch(0.65 0.16 350)'
+};
+
+function stripedBg(hue) {
+  return `repeating-linear-gradient(135deg, ${hue.replace(')', ' / 0.9)')} 0px, ${hue.replace(')', ' / 0.9)')} 14px, ${hue.replace(')', ' / 0.65)')} 14px, ${hue.replace(')', ' / 0.65)')} 28px)`;
+}
+
+class Component extends DCLogic {
+  state = { loaded: false, exp: null, readingMode: false };
+
+  componentDidMount() {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    try {
+      const draft = JSON.parse(localStorage.getItem('labExperimentsDraft') || 'null');
+      if (draft && Array.isArray(draft)) {
+        const exp = draft.find(e => e.id === id) || null;
+        this.setState({ loaded: true, exp });
+        return;
+      }
+    } catch (e) {}
+    fetch('./content.json').then(r => r.json()).then(data => {
+      const exp = (data.experiments || []).find(e => e.id === id) || null;
+      this.setState({ loaded: true, exp });
+    });
+  }
+
+  renderVals() {
+    const exp = this.state.exp;
+    if (!this.state.loaded) return { loaded: false, notFound: false, found: false };
+    if (!exp) return { loaded: true, notFound: true, found: false };
+    const details = exp.details || {};
+    const rm = this.state.readingMode;
+    const bgColor = rm ? 'oklch(0.15 0.012 250)' : 'oklch(0.98 0.012 70)';
+    const textColor = rm ? 'oklch(0.92 0.008 250)' : 'oklch(0.22 0.02 60)';
+    const mutedColor = rm ? 'oklch(0.68 0.012 250)' : 'oklch(0.5 0.02 60)';
+    const pillBg = rm ? 'oklch(0.24 0.012 250)' : 'oklch(0.995 0.005 70)';
+    const pillBorder = rm ? 'oklch(0.35 0.012 250)' : 'oklch(0.9 0.02 70)';
+    const keys = Object.values(ACCENTS);
+    const accent = keys[Math.abs((exp.id || '').split('').reduce((a, c) => a + c.charCodeAt(0), 0)) % keys.length];
+    const blocks = (details.blocks || []).filter(b => b.type === 'text' ? true : !!b.src).map(b => {
+      let node = null;
+      if (b.type === 'text') {
+        node = React.createElement('div', { dangerouslySetInnerHTML: { __html: b.html || '' } });
+      } else if (b.mediaType === 'image' || b.mediaType === 'gif') {
+        node = React.createElement('img', { src: b.src, alt: '', style: { width: '100%', borderRadius: '16px', display: 'block', border: 'none', minHeight: '280px', background: 'oklch(0.96 0.012 70)' } });
+      } else if (b.mediaType === 'video') {
+        node = React.createElement('video', { src: b.src, controls: true, style: { width: '100%', borderRadius: '16px', display: 'block', border: 'none', minHeight: '280px', background: 'oklch(0.96 0.012 70)' } });
+      } else if (b.mediaType === 'iframe') {
+        node = React.createElement('iframe', { src: b.src, style: { width: '100%', borderRadius: '16px', display: 'block', border: 'none', minHeight: '280px', aspectRatio: '16/9', background: 'oklch(0.96 0.012 70)' } });
+      }
+      return {
+        isText: b.type === 'text',
+        isMedia: b.type === 'media',
+        wrapStyle: `font-size:17px; line-height:1.7; color:${rm ? 'oklch(0.85 0.008 250)' : 'oklch(0.35 0.02 60)'};`,
+        node
+      };
+    });
+
+    return {
+      loaded: true,
+      notFound: false,
+      found: true,
+      details,
+      heroImageStyle: `height:320px; position:relative; overflow:hidden; border-radius:16px; display:flex; align-items:center; justify-content:center; background:${details.heroImage && (!details.heroImageType || details.heroImageType === 'image' || details.heroImageType === 'gif') ? `center/cover no-repeat url(${details.heroImage})` : stripedBg(accent)};`,
+      showHeroPlaceholder: !details.heroImage,
+      showHeroVideo: !!details.heroImage && details.heroImageType === 'video',
+      showHeroIframe: !!details.heroImage && details.heroImageType === 'iframe',
+      tools: Array.isArray(details.tools) ? details.tools : String(details.tools || '').split(',').map(s => s.trim()).filter(Boolean),
+      hasCollaborators: !!(Array.isArray(details.collaborators) ? details.collaborators.length : String(details.collaborators || '').trim()),
+      collaboratorsText: Array.isArray(details.collaborators) ? details.collaborators.join(', ') : String(details.collaborators || ''),
+      hasLiveUrl: !!details.liveUrl && details.liveUrl !== '#',
+      hasCodeUrl: !!details.codeUrl && details.codeUrl !== '#',
+      blocks,
+      pageWrapStyle: `min-height:100vh; background:${bgColor}; color:${textColor}; transition:background 0.2s ease, color 0.2s ease;`,
+      textColor,
+      mutedColor,
+      toolPillStyle: `background:${pillBg}; color:${textColor}; border:2px solid ${pillBorder}; border-radius:100px; padding:7px 16px; font-family:'Unbounded',sans-serif; font-weight:600; font-size:13px;`,
+      liveBtnStyle: `background:${rm ? 'oklch(0.92 0.008 250)' : 'oklch(0.22 0.02 60)'}; color:${rm ? 'oklch(0.15 0.012 250)' : 'oklch(0.98 0.01 70)'}; padding:12px 24px; border-radius:100px; font-family:'Unbounded',sans-serif; font-weight:700; font-size:14px;`,
+      codeBtnStyle: `border:2px solid ${textColor}; color:${textColor}; padding:10px 22px; border-radius:100px; font-family:'Unbounded',sans-serif; font-weight:700; font-size:14px;`,
+      readingModeLabel: rm ? '☀ Exit reading mode' : '◐ Reading mode',
+      readingModeBtnStyle: `position:fixed; top:24px; right:24px; z-index:40; background:${rm ? 'oklch(0.28 0.012 250)' : 'oklch(0.22 0.02 60)'}; color:oklch(0.98 0.01 70); border:none; font-family:'Unbounded',sans-serif; font-weight:600; font-size:13px; padding:10px 18px; border-radius:100px; cursor:pointer;`,
+      toggleReadingMode: () => this.setState({ readingMode: !this.state.readingMode })
+    };
+  }
+}
+
+</script>
+</body>
+</html>
