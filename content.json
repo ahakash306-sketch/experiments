@@ -6,7 +6,8 @@
         "title": "Procedural blob generator",
         "body": "A tiny tool that spits out endless organic shapes for hero backgrounds.",
         "heroImage": "",
-        "heroImagePlaceholder": "canvas demo gif"
+        "heroImagePlaceholder": "canvas demo gif",
+        "heroImageType": "image"
       },
       "details": {
         "title": "Procedural blob generator",
@@ -40,7 +41,8 @@
         "title": "Chat with my terminal",
         "body": "An LLM wired straight into my shell — mostly harmless, occasionally chaotic.",
         "heroImage": "",
-        "heroImagePlaceholder": "screen recording"
+        "heroImagePlaceholder": "screen recording",
+        "heroImageType": "image"
       },
       "details": {
         "title": "Chat with my terminal",
@@ -64,205 +66,6 @@
             "id": "b4",
             "type": "text",
             "html": "Gave it a system prompt with too much attitude, so it now refuses to help with anything before coffee. Working as intended."
-          }
-        ]
-      }
-    },
-    {
-      "id": "synth-pad",
-      "card": {
-        "title": "Synth pad in the browser",
-        "body": "Web Audio experiment: four oscillators, one knob, way too much reverb.",
-        "heroImage": "",
-        "heroImagePlaceholder": "waveform preview"
-      },
-      "details": {
-        "title": "Synth pad in the browser",
-        "heroImage": "",
-        "heroImagePlaceholder": "waveform preview",
-        "tools": [
-          "Web Audio API",
-          "JavaScript"
-        ],
-        "liveUrl": "#",
-        "codeUrl": "#",
-        "collaborators": [],
-        "blocks": [
-          {
-            "id": "b5",
-            "type": "text",
-            "html": "Four detuned oscillators feeding a single lowpass filter and a convolution reverb. One knob controls everything at once because too many knobs is how you end up never finishing a project."
-          },
-          {
-            "id": "b6",
-            "type": "text",
-            "html": "Sounds best played through actual speakers, not laptop ones — you have been warned."
-          }
-        ]
-      }
-    },
-    {
-      "id": "mood-cli",
-      "card": {
-        "title": "Tiny CLI that guesses your mood",
-        "body": "Feed it a sentence, it feeds back a color and a bad joke.",
-        "heroImage": "",
-        "heroImagePlaceholder": "terminal capture"
-      },
-      "details": {
-        "title": "Tiny CLI that guesses your mood",
-        "heroImage": "",
-        "heroImagePlaceholder": "terminal capture",
-        "tools": [
-          "Rust",
-          "Sentiment analysis"
-        ],
-        "liveUrl": "#",
-        "codeUrl": "#",
-        "collaborators": [],
-        "blocks": [
-          {
-            "id": "b7",
-            "type": "text",
-            "html": "A single-binary CLI that scores the sentiment of whatever you type and prints back a matching color swatch plus a joke of questionable quality."
-          },
-          {
-            "id": "b8",
-            "type": "text",
-            "html": "Built mostly to learn Rust. The jokes were not part of the plan but they were the part everyone liked."
-          }
-        ]
-      }
-    },
-    {
-      "id": "desk-light-rig",
-      "card": {
-        "title": "ESP32 desk light rig",
-        "body": "Ambient lighting that reacts to my calendar. Mostly reacts by turning red.",
-        "heroImage": "",
-        "heroImagePlaceholder": "product shot"
-      },
-      "details": {
-        "title": "ESP32 desk light rig",
-        "heroImage": "",
-        "heroImagePlaceholder": "product shot",
-        "tools": [
-          "ESP32",
-          "WS2812 LEDs",
-          "Google Calendar API"
-        ],
-        "liveUrl": "#",
-        "codeUrl": "#",
-        "collaborators": [],
-        "blocks": [
-          {
-            "id": "b9",
-            "type": "text",
-            "html": "A strip of addressable LEDs behind the monitor polls my calendar every minute. Free time is a calm blue, meetings are amber, and back-to-back days turn the whole strip red as a warning to future me."
-          },
-          {
-            "id": "b10",
-            "type": "text",
-            "html": "V2 swapped a flaky relay for a proper LED driver board — no more flickering every time the WiFi hiccups."
-          }
-        ]
-      }
-    },
-    {
-      "id": "emoji-markdown",
-      "card": {
-        "title": "Emoji-only markdown parser",
-        "body": "Because someone had to write a spec for this. That someone was bored.",
-        "heroImage": "",
-        "heroImagePlaceholder": "code screenshot"
-      },
-      "details": {
-        "title": "Emoji-only markdown parser",
-        "heroImage": "",
-        "heroImagePlaceholder": "code screenshot",
-        "tools": [
-          "JavaScript",
-          "Parser combinators"
-        ],
-        "liveUrl": "#",
-        "codeUrl": "#",
-        "collaborators": [],
-        "blocks": [
-          {
-            "id": "b11",
-            "type": "text",
-            "html": "A markdown dialect where headings, bold, and lists are all written with emoji instead of symbols. Fully spec'd, fully parsed, fully unnecessary."
-          },
-          {
-            "id": "b12",
-            "type": "text",
-            "html": "The best part is the error messages, which are also emoji-only, which means they help nobody."
-          }
-        ]
-      }
-    },
-    {
-      "id": "voice-sketch",
-      "card": {
-        "title": "Voice-controlled sketch pad",
-        "body": "Say a shape, watch it draw. Say \"undo\" a lot.",
-        "heroImage": "",
-        "heroImagePlaceholder": "demo gif"
-      },
-      "details": {
-        "title": "Voice-controlled sketch pad",
-        "heroImage": "",
-        "heroImagePlaceholder": "demo gif",
-        "tools": [
-          "Web Speech API",
-          "Canvas API"
-        ],
-        "liveUrl": "#",
-        "codeUrl": "#",
-        "collaborators": [],
-        "blocks": [
-          {
-            "id": "b13",
-            "type": "text",
-            "html": "Speech recognition maps simple phrases — \"circle\", \"bigger\", \"move left\" — onto canvas drawing commands. Genuinely useful for quick wireframing when your hands are busy."
-          },
-          {
-            "id": "b14",
-            "type": "text",
-            "html": "Undo is the most-used command by a wide margin, which tells you everything about how well the shape recognition works."
-          }
-        ]
-      }
-    },
-    {
-      "id": "playlist-covers",
-      "card": {
-        "title": "Generative playlist covers",
-        "body": "Turns a Spotify playlist mood into a cover art palette.",
-        "heroImage": "",
-        "heroImagePlaceholder": "grid preview"
-      },
-      "details": {
-        "title": "Generative playlist covers",
-        "heroImage": "",
-        "heroImagePlaceholder": "grid preview",
-        "tools": [
-          "Spotify API",
-          "Canvas API"
-        ],
-        "liveUrl": "#",
-        "codeUrl": "#",
-        "collaborators": [],
-        "blocks": [
-          {
-            "id": "b15",
-            "type": "text",
-            "html": "Pulls audio features (tempo, energy, valence) for every track in a playlist and maps the averages onto a generative gradient and shape composition."
-          },
-          {
-            "id": "b16",
-            "type": "text",
-            "html": "Chill playlists get soft pastel blobs, workout playlists get sharp neon triangles. Surprisingly on the nose most of the time."
           }
         ]
       }
