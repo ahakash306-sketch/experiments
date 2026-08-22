@@ -1,36 +1,47 @@
 {
   "experiments": [
     {
-      "id": "blob-generator",
+      "id": "skypod",
       "card": {
-        "title": "Procedural blob generator",
-        "body": "A tiny tool that spits out endless organic shapes for hero backgrounds.",
-        "heroImage": "",
-        "heroImagePlaceholder": "canvas demo gif",
+        "title": "skypod. A Device That Never Existed",
+        "body": "Remember when devices had buttons?",
+        "heroImage": "uploads/skypod.png",
+        "heroImagePlaceholder": "skypod loading...",
         "heroImageType": "image"
       },
       "details": {
-        "title": "Procedural blob generator",
-        "heroImage": "",
+        "title": "skypod. A Device That Never Existed",
+        "heroImage": "uploads/skypod.png",
         "heroImagePlaceholder": "canvas demo gif",
         "tools": [
-          "Canvas API",
-          "JavaScript",
-          "SVG"
+          "Figma",
+          "Claude",
+          "Gemini"
         ],
-        "liveUrl": "#",
+        "liveUrl": "#skypod.itssky.co.in",
         "codeUrl": "#",
         "collaborators": [],
         "blocks": [
           {
             "id": "b1",
             "type": "text",
-            "html": "Started as a favor for a hero background and turned into its own toy. The generator layers a handful of noise-perturbed circles and blends them with a metaball-style filter to get that soft, organic blob look."
+            "html": "<p dir=\"ltr\">Remember when devices had buttons?</p>\n\n<p dir=\"ltr\">Not \"tap here\" buttons. Real ones. The kind you clicked with your thumb without looking, because your hand already knew the way. We've traded all of that for touchscreens and voice commands and AI that does things before we even ask. Convenient, sure. But somewhere along the way we lost the fun of <em>fiddling</em> with a machine.</p>"
           },
           {
             "id": "b2",
             "type": "text",
-            "html": "Every refresh gives a new shape, and a small control panel lets you dial in point count, wobble amount, and color. Export button spits out a clean SVG path, ready to drop into any design file."
+            "html": "<p dir=\"ltr\">So I built one back.</p>\n\n<p dir=\"ltr\">Meet Skypod — a fully working, fully fake iPod. No touchscreen. No taps. You control the whole thing with your arrow keys and a joystick, just like scrolling through an old click wheel, hunting for the right song at 2am.</p>\n\n<p dir=\"ltr\">Once you're in, SKY OS boots up with a little green glow and a menu that feels straight out of 2007:</p>\n\n<ul dir=\"ltr\">\n<li><strong>Camera</strong> — because every good gadget needs one</li>\n<li><strong>Ebook Reader</strong> — for when you want to pretend you're offline</li>\n<li><strong>Games</strong> — Snake, Minesweeper, Pixel Racer, all present and correct</li>\n<li><strong>Music</strong>, <strong>Photos</strong>, <strong>Voice Recorder</strong> — the classics</li></ul>"
+          },
+          {
+            "id": "blk1-mt3xj8ix",
+            "type": "media",
+            "mediaType": "image",
+            "src": "uploads/Skypod 1.1.png"
+          },
+          {
+            "id": "blk2-mt3xja66",
+            "type": "text",
+            "html": "<p dir=\"ltr\">Navigate up, down, left, right. Hit OK. That's it. That's the whole interface, and somehow it's more satisfying than anything with a touchscreen has been in years.</p>\n\n<p dir=\"ltr\">One more thing — the background of the site isn't just sitting there. Hover around and it starts telling little stories of its own. Not one I'm handing you, one you find.</p>\n\n<p dir=\"ltr\">It's a small, silly, nostalgic thing I made because I wanted to. Go play with it.</p>"
           }
         ]
       }
