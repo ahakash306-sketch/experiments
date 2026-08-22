@@ -47,36 +47,39 @@
       }
     },
     {
-      "id": "terminal-ai",
+      "id": "reform-run",
       "card": {
-        "title": "Chat with my terminal",
-        "body": "An LLM wired straight into my shell — mostly harmless, occasionally chaotic.",
-        "heroImage": "",
-        "heroImagePlaceholder": "screen recording",
+        "title": "I Built a Fitness App Without Opening Figma",
+        "body": "No wireframes, no mockups — just a colour scheme and a lot of back-and-forth with an AI.",
+        "heroImage": "uploads/Reform.jpg",
+        "heroImagePlaceholder": "Reform you... start today",
         "heroImageType": "image"
       },
       "details": {
-        "title": "Chat with my terminal",
-        "heroImage": "",
+        "title": "I Built a Fitness App Without Opening Figma",
+        "heroImage": "uploads/Reform.jpg",
         "heroImagePlaceholder": "screen recording",
         "tools": [
-          "Node.js",
-          "Claude API",
-          "Bash"
+          "Claude Design"
         ],
-        "liveUrl": "#",
+        "liveUrl": "https://reform.run.place/",
         "codeUrl": "#",
         "collaborators": [],
         "blocks": [
           {
             "id": "b3",
             "type": "text",
-            "html": "A background process watches my shell history and lets me ask questions in plain English — \"what was that docker command from last week\" — and get back a real, runnable line."
+            "html": "<p dir=\"ltr\">It started at the gym. People kept asking me for workout plans, diet tips, recovery advice — mostly because trainers are expensive and nobody's schedule lines up. So I thought: what if I just built the thing myself, without touching Figma, code, or anything I'd normally reach for?</p>\n\n<p dir=\"ltr\">Turns out AI is amazing right up until you want something specific. The first draft was fine — generic, forgettable, technically fine. The real work started after that: fighting for every detail. Spacing, flow, the stuff that actually makes something feel good to use, not just work.</p>"
           },
           {
             "id": "b4",
             "type": "text",
-            "html": "Gave it a system prompt with too much attitude, so it now refuses to help with anything before coffee. Working as intended."
+            "html": "<p dir=\"ltr\">Four steps, under two minutes: BMI, measurements, a workout plan, a diet plan, a recovery plan — all exportable as a PDF. Someone at my gym tried it and asked if their protein numbers were right. They were. That felt pretty great.</p>\n\n<p dir=\"ltr\">Quick honest note: this is for fun, built to help people who don't have a trainer on speed dial. Everything's calculation-based, not a professional looking at you in person — so treat it as a starting point, not medical advice.</p>"
+          },
+          {
+            "id": "blk3-mt3ylfrd",
+            "type": "text",
+            "html": "<strong>Try it →</strong> <a href=\"https://www.reeform.run.place\">www.reeform.run.place</a>\n<strong>Full story (prompts, corrections, the messy bits) →</strong> <a href=\"https://medium.com/@ahakash306/a-designers-pov-on-gen-ai-why-it-works-great-until-you-actually-expect-something-from-it-2ea7b0d36f32?sharedUserId=ahakash306\">Medium</a>"
           }
         ]
       }
